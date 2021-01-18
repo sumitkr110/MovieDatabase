@@ -1,0 +1,70 @@
+//
+//  Extensions.swift
+//  MovieDatabase
+//
+//  Created by Sumit Kumar on 18/01/21.
+//  Copyright © 2021 sumitkr110. All rights reserved.
+//
+
+import Foundation
+import UIKit
+
+extension UIImageView {
+    //Downloads and caches images
+    func downloaded(from url: URL) {
+        let cache = URLCache.shared
+        let request = URLRequest.init(url: url)
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            if let data = cache.cachedResponse(for: request)?.data, let image = UIImage.init(data: data) {
+                DispatchQueue.main.async {
+                    self.image = image
+                }
+            } else {
+                URLSession.shared.dataTask(with: request) { (data, response, error) in
+                    if let data = data, let image = UIImage.init(data: data) {
+                        let cachedData = CachedURLResponse.init(response: response!, data: data)
+                        cache.storeCachedResponse(cachedData, for: request)
+                        DispatchQueue.main.async {
+                            self.image = image
+                        }
+                    }
+                }.resume()
+            }
+        }
+    }
+}
+
+extension UIView{
+    func activityStartAnimating(activityColor: UIColor, backgroundColor: UIColor) {
+        let backgroundView = UIView()
+        backgroundView.frame = CGRect.init(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height)
+        backgroundView.backgroundColor = backgroundColor
+        backgroundView.tag = Constant.activityBackgroundViewTag
+        var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()
+        activityIndicator = UIActivityIndicatorView(frame: CGRect.init(x: 0, y: 0, width: 50, height: 50))
+        activityIndicator.center = self.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = UIActivityIndicatorView.Style.large
+        activityIndicator.color = activityColor
+        activityIndicator.startAnimating()
+        self.isUserInteractionEnabled = false
+        backgroundView.addSubview(activityIndicator)
+        self.addSubview(backgroundView)
+    }
+    
+    func activityStopAnimating() {
+        if let background = viewWithTag(Constant.activityBackgroundViewTag){
+            background.removeFromSuperview()
+        }
+        self.isUserInteractionEnabled = true
+    }
+}
+
+extension UITableViewCell {
+    /// Generates cell identifier derived from class name
+    public static func cellIdentifier() -> String {
+        return String(describing: self)
+    }
+}
+
