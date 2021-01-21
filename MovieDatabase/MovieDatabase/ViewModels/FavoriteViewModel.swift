@@ -13,11 +13,9 @@ class FavoriteViewModel {
     
     func fetchFavoriteMovieList(){
         if let favoriteMovies = CoreDataManager.sharedManager.fetchAllFavoriteMovies(){
-            
             favoriteMovieList.value = favoriteMovies
         }
     }
-    
     func cellIdentifier() -> String {
         return MovieCollectionCell.cellIdentifier()
     }
@@ -31,7 +29,6 @@ class FavoriteViewModel {
         
         return UIEdgeInsets.init(top: CGFloat(Constant.padding), left: CGFloat(Constant.padding), bottom: CGFloat(Constant.padding), right: CGFloat(Constant.padding))
     }
-    
     func getMinimumLineSpace() -> CGFloat {
         return CGFloat(Constant.padding)
     }

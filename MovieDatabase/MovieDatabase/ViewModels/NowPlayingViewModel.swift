@@ -48,7 +48,15 @@ class NowPlayingViewModel {
         }
         return isFavorite
     }
-    
+    func handleFavoriteButtonAction(movieVM:MovieItemVM)-> (() -> Void){
+        return {
+            if  (movieVM.isFavorite == false){
+                CoreDataManager.sharedManager.deleteMovieWithId((movieVM.movieId)!)
+            }else{
+                CoreDataManager.sharedManager.saveFavoriteMovie(id: Int64(movieVM.movieId ?? 0), movieTitle: movieVM.movieTitle, moviePoster: movieVM.moviePoster, movieReleaseDate: movieVM.movieReleaseDate, isFavorite: movieVM.isFavorite , moviePosterPath: movieVM.moviePosterPath)
+            }
+        }
+    }
     func cellIdentifier() -> String {
         return MovieCollectionCell.cellIdentifier()
     }
@@ -74,6 +82,7 @@ class MovieItemVM: ItemViewModel
     let moviePoster : String?
     let movieReleaseDate : String?
     var isFavorite : Bool
+    var favoriteButtonAction: (() -> Void)? = nil
     var moviePosterPath : String?{
         return Constant.imageBaseUrl + (self.moviePoster ?? "")
     }

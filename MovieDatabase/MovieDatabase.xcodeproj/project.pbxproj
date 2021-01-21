@@ -139,7 +139,8 @@
 		D8496D0A25B5CD1A00BFD79E /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				D8496D0B25B5CD1A00BFD79E /* APIService.swift */,
+				D859653525B9B3560072439F /* APIServices */,
+				D859652325B884E60072439F /* CoreData */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -217,6 +218,14 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		D859653525B9B3560072439F /* APIServices */ = {
+			isa = PBXGroup;
+			children = (
+				D8496D0B25B5CD1A00BFD79E /* APIService.swift */,
+			);
+			path = APIServices;
+			sourceTree = "<group>";
+		};
 		D888F48A25B5CB99002960BE = {
 			isa = PBXGroup;
 			children = (
@@ -242,7 +251,6 @@
 		D888F49525B5CB99002960BE /* MovieDatabase */ = {
 			isa = PBXGroup;
 			children = (
-				D859652325B884E60072439F /* CoreData */,
 				D8496D2025B5CECF00BFD79E /* Protocols */,
 				D8496D1A25B5CDBE00BFD79E /* Models */,
 				D8496D4C25B6042D00BFD79E /* Views */,

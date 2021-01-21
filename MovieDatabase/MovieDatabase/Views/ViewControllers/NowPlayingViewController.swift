@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  NowPlayingViewController.swift
 //  MovieDatabase
 //
 //  Created by Sumit Kumar on 18/01/21.
@@ -9,8 +9,8 @@
 import UIKit
 
 class NowPlayingViewController: UIViewController {
-    let apiService = APIService()
     @IBOutlet weak var nowPlayingMoviesCollectionView: UICollectionView!
+    let apiService = APIService()
     lazy var viewModel : NowPlayingViewModel = {
         let viewModel = NowPlayingViewModel.init(with: apiService)
         return viewModel
@@ -26,12 +26,15 @@ class NowPlayingViewController: UIViewController {
         nowPlayingMoviesCollectionView.dataSource = self
         nowPlayingMoviesCollectionView.delegate = self
         nowPlayingMoviesCollectionView.register(UINib.init(nibName:MovieCollectionCell.cellIdentifier() , bundle: nil), forCellWithReuseIdentifier: MovieCollectionCell.cellIdentifier())
-       }
+    }
     //Data binding with View Model
     private func bindData(){
         viewModel.nowPlayingMovieList.addObserver(fireNow: false) { [weak self] nowPlayingMovieList in
             DispatchQueue.main.async {
                 self?.nowPlayingMoviesCollectionView.reloadData()
+                for movieVM in nowPlayingMovieList{
+                    movieVM.favoriteButtonAction = self?.viewModel.handleFavoriteButtonAction(movieVM: movieVM)
+                }
             }
         }
         viewModel.isLoading.addObserver {[weak self] isLoading in
@@ -44,6 +47,10 @@ class NowPlayingViewController: UIViewController {
                 }
             }
         }
+    }
+    deinit {
+        viewModel.nowPlayingMovieList.removeObserver()
+        viewModel.isLoading.removeObserver()
     }
 }
 
@@ -64,12 +71,12 @@ extension NowPlayingViewController : UICollectionViewDelegate, UICollectionViewD
         return viewModel.getGridSize(collectionView.bounds)
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-           return viewModel.getMinimumLineSpace()
-       }
-       
-       func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-           return viewModel.getEdgeInsets()
-       }
+        return viewModel.getMinimumLineSpace()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return viewModel.getEdgeInsets()
+    }
 }
 
 

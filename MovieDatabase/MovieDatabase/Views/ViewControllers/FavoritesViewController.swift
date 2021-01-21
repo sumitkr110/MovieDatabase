@@ -16,17 +16,17 @@ class FavoritesViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         configureCollectionView()
+        bindData()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.fetchFavoriteMovieList()
-        bindData()
     }
     private func configureCollectionView() {
         favoriteCollectionView.dataSource = self
         favoriteCollectionView.delegate = self
         favoriteCollectionView.register(UINib.init(nibName:MovieCollectionCell.cellIdentifier() , bundle: nil), forCellWithReuseIdentifier: MovieCollectionCell.cellIdentifier())
-       }
+    }
     //Data binding with View Model
     private func bindData(){
         viewModel.favoriteMovieList.addObserver(fireNow: true) { [weak self] favoriteMovies in
@@ -39,6 +39,9 @@ class FavoritesViewController: UIViewController {
                 self?.favoriteCollectionView.reloadData()
             }
         }
+    }
+    deinit {
+        viewModel.favoriteMovieList.removeObserver()
     }
 }
 
@@ -59,11 +62,11 @@ extension FavoritesViewController : UICollectionViewDelegate, UICollectionViewDa
         return viewModel.getGridSize(collectionView.bounds)
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-           return viewModel.getMinimumLineSpace()
-       }
-       
-       func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-           return viewModel.getEdgeInsets()
-       }
+        return viewModel.getMinimumLineSpace()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return viewModel.getEdgeInsets()
+    }
 }
 

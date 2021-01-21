@@ -13,7 +13,6 @@ class MovieCollectionCell: UICollectionViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var favoriteButton: UIButton!
-    //    var nowPlayingViewModel : MovieItemVM?
     var vm : ItemViewModel?
     
     override func awakeFromNib() {
@@ -26,23 +25,10 @@ class MovieCollectionCell: UICollectionViewCell {
     }
     @IBAction func favoriteButtonAction(_ sender: UIButton) {
         sender.isSelected = !sender.isSelected
-        updateFavoriteButton(sender)
-    }
-    func updateFavoriteButton(_ sender: UIButton)  {
         if let movieVM = (vm as? MovieItemVM){
             movieVM.isFavorite = sender.isSelected
-            if  (movieVM.isFavorite == false){
-                CoreDataManager.sharedManager.deleteMovieWithId((movieVM.movieId)!)
-            }else{
-                CoreDataManager.sharedManager.saveFavoriteMovie(id: Int64(movieVM.movieId ?? 0), movieTitle: movieVM.movieTitle, moviePoster: movieVM.moviePoster, movieReleaseDate: movieVM.movieReleaseDate, isFavorite: movieVM.isFavorite , moviePosterPath: movieVM.moviePosterPath)
-            }
+            movieVM.favoriteButtonAction!()
         }
-//        else if let favVM = (vm as? MovieItem){
-//            favVM.isFavorite = sender.isSelected
-//            if  (favVM.isFavorite == false){
-//                CoreDataManager.sharedManager.deleteMovieWithId(Int(favVM.id))
-//            }
-//        }
     }
 }
 

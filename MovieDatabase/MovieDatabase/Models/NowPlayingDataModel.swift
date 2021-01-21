@@ -15,11 +15,11 @@ struct NowPlayingDataModel:Codable {
     let totalResults : Int?
     let dates : Dates?
     enum CodingKeys: String, CodingKey {
-    case page
-    case results
-    case totalPages = "total_pages"
-    case totalResults = "total_results"
-    case dates
+        case page
+        case results
+        case totalPages = "total_pages"
+        case totalResults = "total_results"
+        case dates
     }
 }
 
