@@ -69,6 +69,7 @@ extension APIService : NowPlayingAPIServiceProtocol{
         }
         var urlRequest = URLRequest.init(url: bookListUrl)
         urlRequest.httpMethod = "GET"
+       // urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
         self.callAPIWithUrl(request: urlRequest, completionHandler: completionHandler)
     }
 }

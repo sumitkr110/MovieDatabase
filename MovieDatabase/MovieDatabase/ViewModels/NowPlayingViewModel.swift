@@ -7,15 +7,11 @@
 //
 
 import Foundation
-struct ErrorResult  {
-    let errorMessage : String
-    let errorTitle : String
-    
-}
+import UIKit
+
 class NowPlayingViewModel {
     var nowPlayingMovieList =  Observable<[MovieItemVM]>(value: [])
     var isLoading = Observable<Bool> (value: true)
-    var errorResult = Observable<ErrorResult?>(value: nil)
     var apiService : NowPlayingAPIServiceProtocol?
     
     init(with apiService:NowPlayingAPIServiceProtocol?) {
@@ -26,7 +22,9 @@ class NowPlayingViewModel {
             switch result{
             case .success(let nowPlayingDataModel):
                 self?.buildItemViewModelFrom(nowPlayingVM: nowPlayingDataModel)
+                self?.isLoading.value = false
             case .failure(let error):
+                self?.isLoading.value = false
                 print(error)
             }
         }
@@ -34,18 +32,57 @@ class NowPlayingViewModel {
     private func buildItemViewModelFrom(nowPlayingVM:NowPlayingDataModel) {
         if let movies = nowPlayingVM.results{
             for movie in movies {
-                let movieItemVM = MovieItemVM(movieTitle: movie.title, moviePoster: movie.posterPath, moviePopularity: movie.popularity, movieReleaseDate: movie.releaseDate)
+                let movieItemVM = MovieItemVM.init(movieId: movie.id, movieTitle: movie.title, moviePoster: movie.posterPath, movieReleaseDate: movie.releaseDate, isFavorite: checkForFavoriteMovies(movie.id!))
                 nowPlayingMovieList.value.append(movieItemVM)
             }
         }
     }
+    private func checkForFavoriteMovies(_ movieId: Int) -> Bool{
+        var isFavorite = false
+        if let favoriteMovies = CoreDataManager.sharedManager.fetchAllFavoriteMovies(){
+            for movie in favoriteMovies{
+                if (movie.id == movieId) {
+                    isFavorite = true
+                }
+            }
+        }
+        return isFavorite
+    }
+    
+    func cellIdentifier() -> String {
+        return MovieCollectionCell.cellIdentifier()
+    }
+    func getGridSize(_ bounds:CGRect) -> CGSize {
+        let margin = CGFloat(Constant.padding) * 3
+        let width = (bounds.width - margin) / 2
+        let height = ((width*3)/2) + CGFloat(Constant.bottomSpaceForMovieCollectionCell)
+        return CGSize.init(width: width, height: height)
+    }
+    func getEdgeInsets() -> UIEdgeInsets {
+        return UIEdgeInsets.init(top: CGFloat(Constant.padding), left: CGFloat(Constant.padding), bottom: CGFloat(Constant.padding), right: CGFloat(Constant.padding))
+    }
+    
+    func getMinimumLineSpace() -> CGFloat {
+        return CGFloat(Constant.padding)
+    }
 }
 
-struct MovieItemVM: ItemViewModel
+class MovieItemVM: ItemViewModel
 {
+    let movieId : Int?
     let movieTitle : String?
     let moviePoster : String?
-    let moviePopularity : Double?
     let movieReleaseDate : String?
+    var isFavorite : Bool
+    var moviePosterPath : String?{
+        return Constant.imageBaseUrl + (self.moviePoster ?? "")
+    }
+    init(movieId:Int?,movieTitle: String?, moviePoster: String?, movieReleaseDate:String?, isFavorite:Bool) {
+        self.movieId = movieId
+        self.movieTitle = movieTitle
+        self.moviePoster = moviePoster
+        self.movieReleaseDate = movieReleaseDate
+        self.isFavorite = isFavorite
+    }
 }
 

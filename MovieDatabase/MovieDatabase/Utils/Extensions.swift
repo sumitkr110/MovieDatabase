@@ -9,32 +9,6 @@
 import Foundation
 import UIKit
 
-extension UIImageView {
-    //Downloads and caches images
-    func downloaded(from url: URL) {
-        let cache = URLCache.shared
-        let request = URLRequest.init(url: url)
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let data = cache.cachedResponse(for: request)?.data, let image = UIImage.init(data: data) {
-                DispatchQueue.main.async {
-                    self.image = image
-                }
-            } else {
-                URLSession.shared.dataTask(with: request) { (data, response, error) in
-                    if let data = data, let image = UIImage.init(data: data) {
-                        let cachedData = CachedURLResponse.init(response: response!, data: data)
-                        cache.storeCachedResponse(cachedData, for: request)
-                        DispatchQueue.main.async {
-                            self.image = image
-                        }
-                    }
-                }.resume()
-            }
-        }
-    }
-}
-
 extension UIView{
     func activityStartAnimating(activityColor: UIColor, backgroundColor: UIColor) {
         let backgroundView = UIView()
@@ -61,10 +35,14 @@ extension UIView{
     }
 }
 
-extension UITableViewCell {
-    /// Generates cell identifier derived from class name
+extension UICollectionViewCell {
+    /// Generated cell identifier derived from class name
     public static func cellIdentifier() -> String {
         return String(describing: self)
     }
 }
 
+public extension CodingUserInfoKey {
+    // Helper property to retrieve the context
+    static let managedObjectContext = CodingUserInfoKey(rawValue: "managedObjectContext")
+}
