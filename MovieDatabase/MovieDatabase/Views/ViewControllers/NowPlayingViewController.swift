@@ -11,8 +11,8 @@ import UIKit
 class NowPlayingViewController: UIViewController {
     @IBOutlet weak var nowPlayingMoviesCollectionView: UICollectionView!
     let apiService = APIService()
-    lazy var viewModel : NowPlayingViewModel = {
-        let viewModel = NowPlayingViewModel.init(with: apiService)
+    lazy var viewModel : MovieViewModel = {
+        let viewModel = MovieViewModel.init(withAPIService: apiService, andPersistentService:PersistentManager.sharedManager)
         return viewModel
     }()
     override func viewDidLoad() {

@@ -10,13 +10,12 @@ import Foundation
 import UIKit
 import CoreData
 
-class CoreDataManager {
-  
-  
-  static let sharedManager = CoreDataManager()
-  private init() {}
+class PersistentManager {
+    
+    static let sharedManager = PersistentManager()
+    private init() {}
     // MARK: - Core Data stack
-
+    
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "MovieDatabase")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
@@ -26,9 +25,9 @@ class CoreDataManager {
         })
         return container
     }()
-
+    
     // MARK: - Core Data Saving support
-
+    
     func saveContext () {
         let context = persistentContainer.viewContext
         if context.hasChanges {
@@ -40,15 +39,17 @@ class CoreDataManager {
             }
         }
     }
+}
+
+extension PersistentManager : MoviePersistentServiceProtocol{
     
     func saveFavoriteMovie(id: Int64?,movieTitle: String?, moviePoster: String?, movieReleaseDate: String?,isFavorite: Bool, moviePosterPath: String?) {
-        let managedContext = CoreDataManager.sharedManager.persistentContainer.viewContext
+        let managedContext = PersistentManager.sharedManager.persistentContainer.viewContext
         managedContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         let entity = NSEntityDescription.entity(forEntityName: "MovieItem",
                                                 in: managedContext)!
-        
         let movie = NSManagedObject(entity: entity,
-                                     insertInto: managedContext)
+                                    insertInto: managedContext)
         movie.setValue(id, forKeyPath: "id")
         movie.setValue(movieTitle, forKeyPath: "movieTitle")
         movie.setValue(moviePoster, forKeyPath: "moviePoster")
@@ -56,21 +57,21 @@ class CoreDataManager {
         movie.setValue(isFavorite, forKeyPath: "isFavorite")
         movie.setValue(moviePosterPath, forKeyPath: "moviePosterPath")
         saveContext()
-      }
+    }
     func fetchAllFavoriteMovies() -> [MovieItem]?{
-        let managedContext = CoreDataManager.sharedManager.persistentContainer.viewContext
+        let managedContext = PersistentManager.sharedManager.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "MovieItem")
         do {
-          let movieItem = try managedContext.fetch(fetchRequest)
-          return movieItem as? [MovieItem]
+            let movieItem = try managedContext.fetch(fetchRequest)
+            return movieItem as? [MovieItem]
         } catch let error as NSError {
-          print("Could not fetch. \(error), \(error.userInfo)")
-          return nil
+            print("Could not fetch. \(error), \(error.userInfo)")
+            return nil
         }
         
-      }
+    }
     func deleteMovieWithId(_ id:Int) {
-        let managedContext = CoreDataManager.sharedManager.persistentContainer.viewContext
+        let managedContext = PersistentManager.sharedManager.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "MovieItem")
         fetchRequest.predicate = NSPredicate.init(format: "id==\(id)")
         fetchRequest.returnsObjectsAsFaults = false
@@ -84,4 +85,5 @@ class CoreDataManager {
             print("Detele all data error :", error)
         }
     }
+    
 }

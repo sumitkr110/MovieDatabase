@@ -11,7 +11,10 @@ import UIKit
 class FavoritesViewController: UIViewController {
     @IBOutlet weak var favoriteCollectionView: UICollectionView!
     @IBOutlet weak var noFavoriteMoviesLabel: UILabel!
-    lazy var viewModel : FavoriteViewModel = FavoriteViewModel()
+    lazy var viewModel : MovieViewModel = {
+        let viewModel = MovieViewModel.init(withAPIService: nil, andPersistentService:PersistentManager.sharedManager)
+        return viewModel
+    }()
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.

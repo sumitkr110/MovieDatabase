@@ -50,9 +50,9 @@ class APIService{
     }
 }
 
-extension APIService : NowPlayingAPIServiceProtocol{
+extension APIService : MovieAPIServiceProtocol{
     
-    func getNowPlayingList(completionHandler : @escaping(Result<NowPlayingDataModel,APIServiceError>)-> Void)  {
+    func getNowPlayingList(completionHandler : @escaping(Result<MovieDataModel,APIServiceError>)-> Void)  {
         guard let url = URL(string:Constant.baseUrl)?.appendingPathComponent(Endpoint.nowPlaying.rawValue)else {
             completionHandler(.failure(APIServiceError.invalidEndpoint))
             return

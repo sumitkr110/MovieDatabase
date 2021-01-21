@@ -8,9 +8,9 @@
 
 import Foundation
 
-struct NowPlayingDataModel:Codable {
+struct MovieDataModel:Codable {
     let page : Int
-    let results : [Movies]?
+    let results : [Movie]?
     let totalPages : Int?
     let totalResults : Int?
     let dates : Dates?
@@ -23,7 +23,7 @@ struct NowPlayingDataModel:Codable {
     }
 }
 
-struct Movies:Codable {
+struct Movie:Codable {
     let posterPath : String?
     let adult : Bool?
     let overview : String?

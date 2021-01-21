@@ -9,13 +9,20 @@
 import Foundation
 import UIKit
 
-class NowPlayingViewModel {
+class MovieViewModel {
     var nowPlayingMovieList =  Observable<[MovieItemVM]>(value: [])
+    var favoriteMovieList =  Observable<[MovieItem]>(value: [])
     var isLoading = Observable<Bool> (value: true)
-    var apiService : NowPlayingAPIServiceProtocol?
-    
-    init(with apiService:NowPlayingAPIServiceProtocol?) {
+    var apiService : MovieAPIServiceProtocol?
+    var persistentService : MoviePersistentServiceProtocol?
+    init(withAPIService apiService:MovieAPIServiceProtocol?, andPersistentService persistentService:MoviePersistentServiceProtocol?) {
         self.apiService = apiService
+        self.persistentService = persistentService
+    }
+    func fetchFavoriteMovieList(){
+        if let favoriteMovies = self.persistentService?.fetchAllFavoriteMovies(){
+            favoriteMovieList.value = favoriteMovies
+        }
     }
     func fetchNowPlayingMovieList(){
         self.apiService?.getNowPlayingList{[weak self] result in
@@ -29,7 +36,7 @@ class NowPlayingViewModel {
             }
         }
     }
-    private func buildItemViewModelFrom(nowPlayingVM:NowPlayingDataModel) {
+    private func buildItemViewModelFrom(nowPlayingVM:MovieDataModel) {
         if let movies = nowPlayingVM.results{
             for movie in movies {
                 let movieItemVM = MovieItemVM.init(movieId: movie.id, movieTitle: movie.title, moviePoster: movie.posterPath, movieReleaseDate: movie.releaseDate, isFavorite: checkForFavoriteMovies(movie.id!))
@@ -39,7 +46,7 @@ class NowPlayingViewModel {
     }
     private func checkForFavoriteMovies(_ movieId: Int) -> Bool{
         var isFavorite = false
-        if let favoriteMovies = CoreDataManager.sharedManager.fetchAllFavoriteMovies(){
+        if let favoriteMovies = self.persistentService?.fetchAllFavoriteMovies(){
             for movie in favoriteMovies{
                 if (movie.id == movieId) {
                     isFavorite = true
@@ -51,9 +58,9 @@ class NowPlayingViewModel {
     func handleFavoriteButtonAction(movieVM:MovieItemVM)-> (() -> Void){
         return {
             if  (movieVM.isFavorite == false){
-                CoreDataManager.sharedManager.deleteMovieWithId((movieVM.movieId)!)
+                self.persistentService?.deleteMovieWithId((movieVM.movieId)!)
             }else{
-                CoreDataManager.sharedManager.saveFavoriteMovie(id: Int64(movieVM.movieId ?? 0), movieTitle: movieVM.movieTitle, moviePoster: movieVM.moviePoster, movieReleaseDate: movieVM.movieReleaseDate, isFavorite: movieVM.isFavorite , moviePosterPath: movieVM.moviePosterPath)
+                self.persistentService?.saveFavoriteMovie(id: Int64(movieVM.movieId!), movieTitle: movieVM.movieTitle, moviePoster: movieVM.moviePoster, movieReleaseDate: movieVM.movieReleaseDate, isFavorite: movieVM.isFavorite , moviePosterPath: movieVM.moviePosterPath)
             }
         }
     }
