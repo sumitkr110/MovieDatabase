@@ -8,7 +8,6 @@
 
 import Foundation
 enum APIServiceError : Error {
-    case noData
     case decodeError
     case invalidResponse
     case apiError
@@ -63,13 +62,13 @@ extension APIService : MovieAPIServiceProtocol{
         }
         let queryItems =  [URLQueryItem(name: Constant.apiKey, value: Constant.apiKeyValue)]
         urlComponents.queryItems = queryItems
-        guard  let bookListUrl = urlComponents.url  else {
+        guard  let movieListUrl = urlComponents.url  else {
             completionHandler(.failure(APIServiceError.invalidEndpoint))
             return
         }
-        var urlRequest = URLRequest.init(url: bookListUrl)
+        var urlRequest = URLRequest.init(url: movieListUrl)
         urlRequest.httpMethod = "GET"
-       // urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
+        // urlRequest.cachePolicy = .reloadIgnoringLocalCacheData
         self.callAPIWithUrl(request: urlRequest, completionHandler: completionHandler)
     }
 }

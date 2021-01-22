@@ -13,6 +13,7 @@ class MovieViewModel {
     var nowPlayingMovieList =  Observable<[MovieItemVM]>(value: [])
     var favoriteMovieList =  Observable<[MovieItem]>(value: [])
     var isLoading = Observable<Bool> (value: true)
+    var error = Observable<APIServiceError?>(value: nil)
     var apiService : MovieAPIServiceProtocol?
     var persistentService : MoviePersistentServiceProtocol?
     init(withAPIService apiService:MovieAPIServiceProtocol?, andPersistentService persistentService:MoviePersistentServiceProtocol?) {
@@ -32,11 +33,11 @@ class MovieViewModel {
                 self?.isLoading.value = false
             case .failure(let error):
                 self?.isLoading.value = false
-                print(error)
+                self?.error.value = error
             }
         }
     }
-    private func buildItemViewModelFrom(nowPlayingVM:MovieDataModel) {
+    func buildItemViewModelFrom(nowPlayingVM:MovieDataModel) {
         if let movies = nowPlayingVM.results{
             for movie in movies {
                 let movieItemVM = MovieItemVM.init(movieId: movie.id, movieTitle: movie.title, moviePoster: movie.posterPath, movieReleaseDate: movie.releaseDate, isFavorite: checkForFavoriteMovies(movie.id!))

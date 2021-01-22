@@ -12,7 +12,8 @@ protocol MovieAPIServiceProtocol {
 }
 
 protocol MoviePersistentServiceProtocol {
-    func saveFavoriteMovie(id: Int64?,movieTitle: String?, moviePoster: String?, movieReleaseDate: String?,isFavorite: Bool, moviePosterPath: String?)
+    @discardableResult
+    func saveFavoriteMovie(id: Int64?,movieTitle: String?, moviePoster: String?, movieReleaseDate: String?,isFavorite: Bool, moviePosterPath: String?) -> MovieItem
     func fetchAllFavoriteMovies() -> [MovieItem]?
     func deleteMovieWithId(_ id:Int)
 }

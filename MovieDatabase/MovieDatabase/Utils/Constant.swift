@@ -16,8 +16,8 @@ struct Constant {
     static let padding = 10.0
     static let bottomSpaceForMovieCollectionCell = 66.0
     static let activityBackgroundViewTag = 475647
-    static let generalAlertMessage = "Something went wrong.Try again after sometime"
-    static let generalAlertTitle = "Error"
+    static let genericAlertMessage = "Something went wrong.Try again after sometime"
+    static let genericAlertTitle = "Sorry"
 }
 
 

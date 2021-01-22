@@ -11,8 +11,12 @@ import UIKit
 class NowPlayingViewController: UIViewController {
     @IBOutlet weak var nowPlayingMoviesCollectionView: UICollectionView!
     let apiService = APIService()
+    private lazy var coreDataStack = CoreDataStack()
+    private lazy var persistentService = PersistentService(
+        managedObjectContext: coreDataStack.mainContext,
+        coreDataStack: coreDataStack)
     lazy var viewModel : MovieViewModel = {
-        let viewModel = MovieViewModel.init(withAPIService: apiService, andPersistentService:PersistentManager.sharedManager)
+        let viewModel = MovieViewModel.init(withAPIService: apiService, andPersistentService:persistentService)
         return viewModel
     }()
     override func viewDidLoad() {
@@ -47,6 +51,17 @@ class NowPlayingViewController: UIViewController {
                 }
             }
         }
+        viewModel.error.addObserver(fireNow: false) { [weak self] error in
+            DispatchQueue.main.async {
+                
+                self?.showAlertWithErrorResult(error: error!)
+            }
+        }
+    }
+    private func showAlertWithErrorResult(error:APIServiceError) {
+        let alert = UIAlertController(title: Constant.genericAlertTitle, message: Constant.genericAlertMessage, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     deinit {
         viewModel.nowPlayingMovieList.removeObserver()

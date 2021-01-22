@@ -11,8 +11,12 @@ import UIKit
 class FavoritesViewController: UIViewController {
     @IBOutlet weak var favoriteCollectionView: UICollectionView!
     @IBOutlet weak var noFavoriteMoviesLabel: UILabel!
+    private lazy var coreDataStack = CoreDataStack()
+    private lazy var persistentService = PersistentService(
+        managedObjectContext: coreDataStack.mainContext,
+        coreDataStack: coreDataStack)
     lazy var viewModel : MovieViewModel = {
-        let viewModel = MovieViewModel.init(withAPIService: nil, andPersistentService:PersistentManager.sharedManager)
+        let viewModel = MovieViewModel.init(withAPIService: nil, andPersistentService:persistentService)
         return viewModel
     }()
     override func viewDidLoad() {
